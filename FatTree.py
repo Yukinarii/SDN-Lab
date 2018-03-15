@@ -99,14 +99,14 @@ class Fattree(Topo):
                     self.HostList[self.pod / 2 * x + i],
                     bw=100)
 
-    def set_ovs_protocol(self,):
-        self._set_ovs_protocol(self.CoreSwitchList)
-        self._set_ovs_protocol(self.AggSwitchList)
-        self._set_ovs_protocol(self.EdgeSwitchList)
+    def set_ovs_stp(self,):
+        self._set_ovs_stp(self.CoreSwitchList)
+        self._set_ovs_stp(self.AggSwitchList)
+        self._set_ovs_stp(self.EdgeSwitchList)
 
-    def _set_ovs_protocol(self, sw_list):
+    def _set_ovs_stp(self, sw_list):
             for sw in sw_list:
-                cmd = "sudo ovs-vsctl set bridge %s protocols=OpenFlow13" % sw
+                cmd = "sudo ovs-vsctl set bridge %s stp_enable=true" % sw
                 os.system(cmd)
 
 
@@ -120,12 +120,12 @@ def iperfTest(net, topo):
         'iperf -s -u -i 1 > iperf_server_differentPod_result', shell=True)
 
     #iperf Server
-    h1001.popen(
+    h1016.popen(
         'iperf -s -u -i 1 > iperf_server_samePod_result', shell=True)
 
     #iperf Client
-    h1016.cmdPrint('iperf -c ' + h1000.IP() + ' -u -t 10 -i 1 -b 100m')
-    h1016.cmdPrint('iperf -c ' + h1001.IP() + ' -u -t 10 -i 1 -b 100m')
+    h1001.cmdPrint('iperf -c ' + h1000.IP() + ' -u -t 10 -i 1 -b 100m')
+    h1001.cmdPrint('iperf -c ' + h1016.IP() + ' -u -t 10 -i 1 -b 100m')
 
 
 def pingTest(net):
@@ -149,10 +149,7 @@ def createTopo(pod, ip="10.0.2.15", port=6653):
         ip=CONTROLLER_IP, port=CONTROLLER_PORT)
     net.start()
 
-    '''
-        Set OVS's protocol
-    '''
-    topo.set_ovs_protocol()
+    topo.set_ovs_stp()
 
     logger.debug("LV1 dumpNode")
 
