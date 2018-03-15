@@ -11,6 +11,7 @@ import os
 logging.basicConfig(filename='./fattree.log', level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+
 class Fattree(Topo):
     logger.debug("Class Fattree")
     CoreSwitchList = []
@@ -111,20 +112,20 @@ class Fattree(Topo):
 
 def iperfTest(net, topo):
     logger.debug("Start iperfTEST")
-    h1000, h1015, h1016 = net.get(
-        topo.HostList[0], topo.HostList[14], topo.HostList[15])
+    h1000, h1001, h1016 = net.get(
+        topo.HostList[0], topo.HostList[1], topo.HostList[15])
 
     #iperf Server
     h1000.popen(
         'iperf -s -u -i 1 > iperf_server_differentPod_result', shell=True)
 
     #iperf Server
-    h1015.popen(
+    h1001.popen(
         'iperf -s -u -i 1 > iperf_server_samePod_result', shell=True)
 
     #iperf Client
     h1016.cmdPrint('iperf -c ' + h1000.IP() + ' -u -t 10 -i 1 -b 100m')
-    h1016.cmdPrint('iperf -c ' + h1015.IP() + ' -u -t 10 -i 1 -b 100m')
+    h1016.cmdPrint('iperf -c ' + h1001.IP() + ' -u -t 10 -i 1 -b 100m')
 
 
 def pingTest(net):
@@ -132,7 +133,7 @@ def pingTest(net):
     net.pingAll()
 
 
-def createTopo(pod, ip="127.0.0.1", port=6633):
+def createTopo(pod, ip="10.0.2.15", port=6653):
     logging.debug("LV1 Create Fattree")
     topo = Fattree(pod)
     topo.createTopo()
@@ -149,7 +150,7 @@ def createTopo(pod, ip="127.0.0.1", port=6633):
     net.start()
 
     '''
-        Set OVS's protocol as OF13
+        Set OVS's protocol
     '''
     topo.set_ovs_protocol()
 
