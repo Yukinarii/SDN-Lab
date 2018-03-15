@@ -136,7 +136,7 @@ def createTopo(pod, ip="127.0.0.1", port=6633):
     logging.debug("LV1 Create Fattree")
     topo = Fattree(pod)
     topo.createTopo()
-    topo.createLink() # ???
+    topo.createLink()
 
     logging.debug("LV1 Start Mininet")
     CONTROLLER_IP = ip
