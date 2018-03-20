@@ -62,11 +62,11 @@ class Fattree(Topo):
     def createHost(self, number):
         logger.debug("Create Host")
         for x in xrange(1, number+1):
-            PREFIX = "h00"
+            PREFIX = "400"
             if x >= int(10):
-                PREFIX = "h0"
+                PREFIX = "40"
             elif x >= int(100):
-                PREFIX = "h"
+                PREFIX = "4"
             self.HostList.append(self.addHost(PREFIX + str(x)))
 
     """
