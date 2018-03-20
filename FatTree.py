@@ -45,7 +45,7 @@ class Fattree(Topo):
             PREFIX = str(layer) + "00"
             if x >= int(10):
                 PREFIX = str(layer) + "0"
-            switch_list.append(self.addSwitch('s' + PREFIX + str(x))) # ex : s1005 s1012
+            switch_list.append(self.addSwitch(PREFIX + str(x)))
 
     def createCoreLayerSwitch(self, number):
         logger.debug("Create Core Layer")
@@ -149,7 +149,7 @@ def createTopo(pod, ip="10.0.2.15", port=6653):
         ip=CONTROLLER_IP, port=CONTROLLER_PORT)
     net.start()
 
-    topo.set_ovs_stp()
+    #topo.set_ovs_stp()
 
     logger.debug("LV1 dumpNode")
 
