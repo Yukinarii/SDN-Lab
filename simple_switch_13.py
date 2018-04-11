@@ -46,6 +46,7 @@ class SimpleSwitch13(app_manager.RyuApp):
     	elif ev.state is DEAD_DISPATCHER:
     	    if datapath.id in self.datapaths:
     	   		self.logger.debug('unregister datapath: %016x', datapath.id)
+    	    	#self.datapaths[datapath.id] = datapath
     			del self.datapaths[datapath.id]
     def _monitor(self):
     	while True:
@@ -64,6 +65,8 @@ class SimpleSwitch13(app_manager.RyuApp):
     @set_ev_cls(ofp_event.EventOFPFlowStatsReply, MAIN_DISPATCHER)
     def _flow_stats_reply_handler(self, ev):
     	body = ev.msg.body
+        total_packet_count = 0
+        total_byte_count = 0
 
         self.logger.info('<<=============leaved host1==========>>')
         self.logger.info('datapath        '
@@ -79,7 +82,9 @@ class SimpleSwitch13(app_manager.RyuApp):
                              stat.match['in_port'], stat.match['eth_src'],
                              stat.instructions[0].actions[0].port,
                              stat.packet_count, stat.byte_count)
-
+                total_packet_count+=stat.packet_count
+                total_byte_count+=stat.byte_count
+        self.logger.info('total packet count = %8d, total byte count = %8d',total_packet_count,total_byte_count)
         self.logger.info('<<=============arrived host1==========>>')
         self.logger.info('datapath        '
                          'in-port    eth-dst            '
@@ -87,10 +92,9 @@ class SimpleSwitch13(app_manager.RyuApp):
         self.logger.info('---------------------'
                          '-------------------------------'
                          '-------------------------------')
-        for stat in sorted([flow for flow in body if flow.priority == 1],
-                           key=lambda flow: (flow.match['in_port'],
-                                              flow.match['eth_dst'])):
-            self.logger.info('%016x %8x %17s %8x %8d %8d',
+        for stat in body:
+            if stat.priority ==1 and stat.match['eth_dst'] == "00:00:00:00:00:01":
+                self.logger.info('%016x %8x %17s %8x %8d %8d',
                              ev.msg.datapath.id,
                              stat.match['in_port'], stat.match['eth_dst'],
                              stat.instructions[0].actions[0].port,
